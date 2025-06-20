@@ -1,0 +1,3 @@
+mixin svg(name, className)
+  svg(class=className)&attributes(attributes)
+    use(xlink:href=`${PATHS.assets}img/sprite.svg#${name}`)

@@ -1,0 +1,50 @@
+{
+  "name": "paradigma-template",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "webpack serve --mode development",
+    "build": "webpack --mode production",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Bogdan Ognistiy",
+  "license": "ISC",
+  "dependencies": {
+    "@babel/core": "^7.27.4",
+    "@babel/preset-env": "^7.27.2",
+    "@webpack-cli/serve": "^3.0.1",
+    "autoprefixer": "^10.4.21",
+    "babel-eslint": "^10.1.0",
+    "babel-loader": "^10.0.0",
+    "clean-webpack-plugin": "^4.0.0",
+    "copy-webpack-plugin": "^13.0.0",
+    "css-loader": "^7.1.2",
+    "cssnano": "^7.0.7",
+    "dev-ip": "^1.0.1",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-import": "^2.31.0",
+    "file-loader": "^6.2.0",
+    "mini-css-extract-plugin": "^2.9.2",
+    "node-sass": "^9.0.0",
+    "postcss-loader": "^8.1.1",
+    "pug": "^3.0.3",
+    "sass-loader": "^16.0.5",
+    "style-loader": "^4.0.0",
+    "webpack": "^5.99.9",
+    "webpack-cli": "^6.0.1",
+    "webpack-dev-server": "^5.2.2",
+    "webpack-merge": "^6.0.1"
+  },
+  "devDependencies": {
+    "@webdiscus/pug-loader": "^2.11.1",
+    "css-minimizer-webpack-plugin": "^7.0.2",
+    "html-webpack-plugin": "^5.6.3",
+    "pug-loader": "^2.4.0",
+    "svg-sprite-loader": "^6.0.11",
+    "svgo": "^3.3.2",
+    "svgo-loader": "^4.0.0",
+    "terser-webpack-plugin": "^5.3.14"
+  }
+}
