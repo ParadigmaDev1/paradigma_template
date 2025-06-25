@@ -4,13 +4,12 @@ const webpack = require("webpack");
 
 // Плагины
 const SpriteLoaderPlugin = require("svg-sprite-loader/plugin");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const devip = require("dev-ip");
 const TerserPlugin = require("terser-webpack-plugin");
-const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+
 // Пути
 const PATHS = {
   src: path.resolve(__dirname, "src"),
@@ -84,26 +83,6 @@ module.exports = {
         },
       },
       {
-        test: /\.(scss|css)$/,
-        use: [
-          MiniCssExtractPlugin.loader,
-          "css-loader",
-          {
-            loader: "postcss-loader",
-            options: {
-              postcssOptions: {
-                plugins: [["autoprefixer"]],
-              },
-            },
-          },
-          "sass-loader",
-        ],
-      },
-      // {
-      //   test: /\.css$/,
-      //   use: [MiniCssExtractPlugin.loader, "css-loader", "postcss-loader"],
-      // },
-      {
         test: /\.pug$/,
         use: [
           {
@@ -113,6 +92,7 @@ module.exports = {
               basedir: PATHS.src,
               data: {
                 PATHS: PATHS,
+                cssPath: `${PATHS.assets}css/main.css`,
               },
             },
           },
@@ -120,7 +100,7 @@ module.exports = {
       },
       {
         test: /\.svg$/,
-        include: path.resolve(PATHS.src, "assets", "sprite"), // Путь к вашим SVG иконкам
+        include: path.resolve(PATHS.src, "assets", "sprite"),
         use: [
           {
             loader: "svg-sprite-loader",
@@ -135,7 +115,7 @@ module.exports = {
       },
       {
         test: /\.svg$/,
-        exclude: path.resolve(PATHS.src, "assets/sprite"), // Исключаем иконки для спрайта
+        exclude: path.resolve(PATHS.src, "assets/sprite"),
         type: "asset/resource",
         generator: {
           filename: "assets/img/[name][ext]",
@@ -147,10 +127,9 @@ module.exports = {
     new SpriteLoaderPlugin({
       plainSprite: true,
     }),
-    new CleanWebpackPlugin(),
-    new MiniCssExtractPlugin({
-      filename: `${PATHS.assets}css/[name].css`,
-    }),
+    ...(process.env.NODE_ENV === "production"
+      ? [new CleanWebpackPlugin()]
+      : []),
     new CopyWebpackPlugin({ patterns: copyPatterns }),
     ...PAGES.map(
       (page) =>
@@ -180,7 +159,6 @@ module.exports = {
         },
         extractComments: false,
       }),
-      new CssMinimizerPlugin(),
     ],
     splitChunks: {
       chunks: "all",
@@ -215,6 +193,7 @@ module.exports = {
     },
     static: {
       watch: true,
+      directory: path.join(__dirname, "dist"),
     },
     liveReload: true,
     hot: false,
