@@ -1,13 +1,51 @@
-const browserSync = require("browser-sync").create();
+import browserSync from "browser-sync";
+import gulp from "gulp";
+import gulpSass from "gulp-sass";
+import dartSass from "sass";
+import postcss from "gulp-postcss";
+import autoprefixer from "autoprefixer";
+import cssnano from "cssnano";
+import rename from "gulp-rename";
+import newer from "gulp-newer";
+import webp from "gulp-webp";
+import imagemin from "gulp-imagemin";
 
-const gulp = require("gulp");
-const sass = require("gulp-sass")(require("sass"));
-const postcss = require("gulp-postcss");
-const autoprefixer = require("autoprefixer");
-const cssnano = require("cssnano");
-const rename = require("gulp-rename");
+const sass = gulpSass(dartSass);
+const { create } = browserSync;
 
-// Обработка стилей
+function images() {
+  // Первый поток: конвертация в WebP
+  return (
+    gulp
+      .src("./src/assets/img/**/*.{jpg,jpeg,png,gif}")
+      .pipe(
+        newer({
+          dest: "./dist/assets/img/",
+          ext: ".webp", // Проверяем существование .webp файлов
+        })
+      )
+      .pipe(webp())
+      .on("error", (err) => {
+        console.error("WebP error:", err.message);
+        this.emit("end");
+      })
+      .pipe(gulp.dest("./dist/assets/img/"))
+
+      // Второй поток: оптимизация исходников (опционально)
+      .pipe(gulp.src("./src/assets/img/**/*.{jpg,jpeg,png,gif}"))
+      .pipe(newer("./dist/assets/img/original/")) // Отдельная папка!
+      .pipe(
+        imagemin({
+          progressive: true,
+          svgoPlugins: [{ removeViewBox: false }],
+          interlaced: true,
+          optimizationLevel: 1,
+        })
+      )
+      .pipe(browserSync.stream())
+  );
+}
+
 function styles() {
   const plugins = [
     autoprefixer(),
@@ -24,21 +62,21 @@ function styles() {
     .pipe(postcss(plugins))
     .pipe(
       rename((path) => {
-        // Убираем путь к папке для всех файлов
         path.dirname = "";
       })
     )
     .pipe(gulp.dest("./dist/assets/css"))
-    .pipe(browserSync.stream()); // Инжектим стили без перезагрузки
+    .pipe(browserSync.stream());
 }
-// Слежение за стилями в dev
+
 function watchStyles() {
   gulp.watch("./src/**/*.scss", styles);
 }
 
 function serve() {
-  browserSync.init({
-    proxy: "http://localhost:3000", // Проксируем Webpack Dev Server
+  const bs = create();
+  bs.init({
+    proxy: "http://localhost:3000",
     port: 3001,
     open: false,
   });
@@ -46,6 +84,5 @@ function serve() {
   gulp.watch("./src/**/*.scss", styles);
 }
 
-// Задачи
-exports.dev = gulp.series(styles, serve);
-exports.build = gulp.series(styles);
+export const dev = gulp.series(styles, serve, images);
+export const build = gulp.series(styles, images);

@@ -1,23 +1,22 @@
-const path = require("path");
-const fs = require("fs");
-const webpack = require("webpack");
+import path from "path";
+import fs from "fs";
+import webpack from "webpack";
+// import SpriteLoaderPlugin from "svg-sprite-loader/plugin";
+import CopyWebpackPlugin from "copy-webpack-plugin";
+import HtmlWebpackPlugin from "html-webpack-plugin";
+import { CleanWebpackPlugin } from "clean-webpack-plugin";
+import TerserPlugin from "terser-webpack-plugin";
+import { fileURLToPath } from "url";
 
-// Плагины
-const SpriteLoaderPlugin = require("svg-sprite-loader/plugin");
-const CopyWebpackPlugin = require("copy-webpack-plugin");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
-const { CleanWebpackPlugin } = require("clean-webpack-plugin");
-const devip = require("dev-ip");
-const TerserPlugin = require("terser-webpack-plugin");
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-// Пути
 const PATHS = {
   src: path.resolve(__dirname, "src"),
   dist: path.resolve(__dirname, "dist"),
   assets: "assets/",
 };
 
-// Проверка существования директорий
 const checkDir = (dir) => {
   if (!fs.existsSync(dir)) {
     console.warn(`Directory not found: ${dir}`);
@@ -31,7 +30,6 @@ const MODALS_DIR = path.resolve(PATHS.src, "modals");
 const PAGES = checkDir(PAGES_DIR);
 const MODALS = checkDir(MODALS_DIR);
 
-// Паттерны для копирования
 const copyPatterns = [];
 const imgPath = path.resolve(PATHS.src, PATHS.assets, "img");
 const staticPath = path.resolve(PATHS.src, "static");
@@ -52,7 +50,7 @@ if (fs.existsSync(staticPath)) {
   });
 }
 
-module.exports = {
+export default {
   entry: {
     main: path.resolve(`${PATHS.src}`, "index.js"),
   },
@@ -124,9 +122,9 @@ module.exports = {
     ],
   },
   plugins: [
-    new SpriteLoaderPlugin({
-      plainSprite: true,
-    }),
+    // new SpriteLoaderPlugin({
+    //   plainSprite: true,
+    // }),
     ...(process.env.NODE_ENV === "production"
       ? [new CleanWebpackPlugin()]
       : []),
